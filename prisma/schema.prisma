@@ -1,0 +1,38 @@
+// prisma/schema.prisma
+// Mirrors sql/setup.sql from the PHP project
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(150)
+  password  String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  progress UserProgress[]
+
+  @@map("users")
+}
+
+model UserProgress {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  userId         Int      @map("user_id") @db.UnsignedInt
+  moduleId       Int      @map("module_id") @db.UnsignedTinyInt
+  materialRead   Boolean  @default(false) @map("material_read") @db.TinyInt
+  quizCompleted  Boolean  @default(false) @map("quiz_completed") @db.TinyInt
+  bestScore      Int      @default(0) @map("best_score") @db.UnsignedTinyInt
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId], name: "uk_user_module")
+  @@map("user_progress")
+}
