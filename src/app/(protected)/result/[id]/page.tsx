@@ -2,16 +2,16 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/auth-context";
 import { MODULES, TOTAL_MODULES } from "@/lib/content";
 import { getLastResult, getModuleProgress, LastQuizResult } from "@/lib/progress-store";
 import Navbar from "@/components/Navbar";
 import ResultClient from "./ResultClient";
 
+const GUEST_ID = "guest";
+
 export default function ResultPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
   const moduleId = Number(params.id);
 
   const [result, setResult] = useState<LastQuizResult | null>(null);
@@ -22,26 +22,24 @@ export default function ResultPage() {
       router.replace("/dashboard");
       return;
     }
-    if (user) {
-      const prog = getModuleProgress(user.id, moduleId);
-      if (!prog.quizCompleted) {
-        router.replace(`/quiz/${moduleId}`);
-        return;
-      }
-      const last = getLastResult(user.id);
-      if (last?.moduleId === moduleId) {
-        setResult(last);
-      } else {
-        setResult({
-          moduleId,
-          score: prog.bestScore,
-          total: MODULES[moduleId].quiz.length,
-          details: [],
-        });
-      }
-      setReady(true);
+    const prog = getModuleProgress(GUEST_ID, moduleId);
+    if (!prog.quizCompleted) {
+      router.replace(`/quiz/${moduleId}`);
+      return;
     }
-  }, [user, moduleId, router]);
+    const last = getLastResult(GUEST_ID);
+    if (last?.moduleId === moduleId) {
+      setResult(last);
+    } else {
+      setResult({
+        moduleId,
+        score: prog.bestScore,
+        total: MODULES[moduleId].quiz.length,
+        details: [],
+      });
+    }
+    setReady(true);
+  }, [moduleId, router]);
 
   if (!ready || !result) return null;
 

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth-context";
 import { saveQuizResult, saveLastResult } from "@/lib/progress-store";
 import Link from "next/link";
 import { LayoutDashboard, ChevronRight, Send, AlertCircle } from "lucide-react";
+
+const GUEST_ID = "guest";
 
 interface Question {
   question: string;
@@ -22,7 +23,6 @@ interface Props {
 
 export default function QuizClient({ moduleId, moduleTitle, moduleColor, questions }: Props) {
   const router = useRouter();
-  const { user } = useAuth();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -38,7 +38,6 @@ export default function QuizClient({ moduleId, moduleTitle, moduleColor, questio
       setError("Jawab semua pertanyaan sebelum mengumpulkan.");
       return;
     }
-    if (!user) return;
     setError("");
     setSubmitting(true);
 
@@ -52,8 +51,8 @@ export default function QuizClient({ moduleId, moduleTitle, moduleColor, questio
     }));
     const score = details.filter((d) => d.isCorrect).length;
 
-    saveQuizResult(user.id, moduleId, score);
-    saveLastResult(user.id, { moduleId, score, total: questions.length, details });
+    saveQuizResult(GUEST_ID, moduleId, score);
+    saveLastResult(GUEST_ID, { moduleId, score, total: questions.length, details });
 
     router.push(`/result/${moduleId}`);
   }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/auth-context";
 import { getProgress, ModuleProgress } from "@/lib/progress-store";
 import { MODULES, TOTAL_MODULES } from "@/lib/content";
 import Navbar from "@/components/Navbar";
@@ -16,13 +15,14 @@ import {
   Clock,
 } from "lucide-react";
 
+const GUEST_ID = "guest";
+
 export default function DashboardPage() {
-  const { user } = useAuth();
   const [progressMap, setProgressMap] = useState<Record<number, ModuleProgress>>({});
 
   useEffect(() => {
-    if (user) setProgressMap(getProgress(user.id));
-  }, [user]);
+    setProgressMap(getProgress(GUEST_ID));
+  }, []);
 
   // Compute stats
   let modulesDone = 0;
@@ -48,7 +48,7 @@ export default function DashboardPage() {
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-2xl font-extrabold text-slate-800">
-            Halo, {user?.name}! 👋
+            Halo, Pelajar! 👋
           </h1>
           <p className="text-slate-500 mt-1">Lanjutkan perjalanan belajarmu hari ini.</p>
         </div>

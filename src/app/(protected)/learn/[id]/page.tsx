@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/auth-context";
 import { MODULES, TOTAL_MODULES } from "@/lib/content";
 import { getProgress, markMaterialRead, ModuleProgress } from "@/lib/progress-store";
 import Navbar from "@/components/Navbar";
@@ -18,10 +17,11 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+const GUEST_ID = "guest";
+
 export default function LearnPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
   const moduleId = Number(params.id);
 
   const [progMap, setProgMap] = useState<Record<number, ModuleProgress>>({});
@@ -31,11 +31,9 @@ export default function LearnPage() {
       router.replace("/dashboard");
       return;
     }
-    if (user) {
-      markMaterialRead(user.id, moduleId);
-      setProgMap(getProgress(user.id));
-    }
-  }, [user, moduleId, router]);
+    markMaterialRead(GUEST_ID, moduleId);
+    setProgMap(getProgress(GUEST_ID));
+  }, [moduleId, router]);
 
   if (!moduleId || !MODULES[moduleId]) return null;
 
