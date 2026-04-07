@@ -59,6 +59,30 @@ export default function QuizClient({ moduleId, moduleTitle, moduleColor, questio
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-8">
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+          0%   { transform: scale(0.3); opacity: 0; }
+          50%  { transform: scale(1.1); }
+          70%  { transform: scale(0.95); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.3); }
+          50%       { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+        }
+        .anim-fade-up  { animation: fadeInUp 0.45s ease both; }
+        .anim-bounce-in { animation: bounceIn 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        .answer-selected { animation: pulse-glow 0.6s ease; }
+        @keyframes floatBrain {
+          0%, 100% { transform: translateY(0) rotate(-5deg); }
+          50%       { transform: translateY(-6px) rotate(5deg); }
+        }
+        .float-brain { animation: floatBrain 2.5s ease-in-out infinite; display: inline-block; }
+      `}</style>
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-6">
         <Link href="/dashboard" className="flex items-center gap-1 hover:text-slate-700 transition-colors">
@@ -75,19 +99,28 @@ export default function QuizClient({ moduleId, moduleTitle, moduleColor, questio
 
       {/* Header */}
       <div
-        className="rounded-2xl p-5 mb-6 border"
+        className="rounded-2xl p-5 mb-6 border anim-fade-up"
         style={{ backgroundColor: moduleColor + "18", borderColor: moduleColor + "44" }}
       >
-        <h1 className="text-xl font-extrabold text-slate-800">Kuis: {moduleTitle}</h1>
-        <p className="text-sm text-slate-600 mt-1">
-          {questions.length} pertanyaan · Pilih jawaban yang paling tepat
-        </p>
+        <div className="flex items-center gap-3">
+          <span className="float-brain text-3xl">🧠</span>
+          <div>
+            <h1 className="text-xl font-extrabold text-slate-800">Kuis: {moduleTitle}</h1>
+            <p className="text-sm text-slate-600 mt-0.5">
+              {questions.length} pertanyaan · Pilih jawaban yang paling tepat
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Questions */}
       <div className="space-y-6 mb-8">
         {questions.map((q, qi) => (
-          <div key={qi} className="bg-white rounded-2xl border border-slate-200 p-5">
+          <div
+            key={qi}
+            className="bg-white rounded-2xl border border-slate-200 p-5 anim-fade-up"
+            style={{ animationDelay: `${0.1 + qi * 0.08}s` }}
+          >
             <p className="font-semibold text-slate-800 mb-4 leading-relaxed">
               <span
                 className="inline-flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold mr-2"
@@ -107,8 +140,8 @@ export default function QuizClient({ moduleId, moduleTitle, moduleColor, questio
                     onClick={() => selectAnswer(qi, opt)}
                     className={`w-full flex items-start gap-3 p-3.5 rounded-xl border-2 text-left text-sm transition-all ${
                       selected
-                        ? "border-blue-500 bg-blue-50 text-blue-900 font-medium"
-                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700"
+                        ? "border-blue-500 bg-blue-50 text-blue-900 font-medium scale-[1.02] shadow-sm answer-selected"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:scale-[1.01] text-slate-700"
                     }`}
                   >
                     <span
@@ -143,7 +176,7 @@ export default function QuizClient({ moduleId, moduleTitle, moduleColor, questio
         <button
           onClick={handleSubmit}
           disabled={submitting || !allAnswered}
-          className="flex items-center gap-2 font-semibold text-white px-6 py-2.5 rounded-xl transition-colors disabled:opacity-50 shadow"
+          className="flex items-center gap-2 font-semibold text-white px-6 py-2.5 rounded-xl transition-all disabled:opacity-50 shadow hover:scale-105 active:scale-95"
           style={{ backgroundColor: allAnswered ? moduleColor : "#94a3b8" }}
         >
           {submitting ? (

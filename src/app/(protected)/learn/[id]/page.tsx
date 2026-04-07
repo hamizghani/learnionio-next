@@ -44,6 +44,24 @@ export default function LearnPage() {
 
   return (
     <>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+          0%   { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+          70%  { transform: scale(1.15) rotate(4deg); }
+          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes wiggleFloat {
+          0%, 100% { transform: translateY(0) rotate(-4deg); }
+          50%       { transform: translateY(-8px) rotate(4deg); }
+        }
+        .anim-fade-up  { animation: fadeInUp 0.45s ease both; }
+        .anim-pop      { animation: popIn 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        .anim-wiggle   { animation: wiggleFloat 2.8s ease-in-out infinite; display: inline-block; }
+      `}</style>
       <Navbar activePage="learn" />
 
       <div className="flex max-w-6xl mx-auto px-4 py-6 gap-6">
@@ -100,12 +118,12 @@ export default function LearnPage() {
 
           {/* Header */}
           <div
-            className="rounded-2xl p-6 mb-6 border"
+            className="rounded-2xl p-6 mb-6 border anim-fade-up"
             style={{ backgroundColor: mod.colorLight, borderColor: mod.color + "33" }}
           >
             <div className="flex items-start gap-4">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0"
+                className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0 anim-pop"
                 style={{ backgroundColor: mod.color }}
               >
                 {moduleId}
@@ -120,7 +138,9 @@ export default function LearnPage() {
                     ~{mod.estimatedMinutes} menit
                   </span>
                 </div>
-                <h1 className="text-2xl font-extrabold text-slate-800">{mod.title}</h1>
+                <h1 className="text-2xl font-extrabold text-slate-800">
+                  {mod.title} <span className="anim-wiggle text-xl">📖</span>
+                </h1>
                 <p className="text-slate-600 text-sm mt-1">{mod.description}</p>
               </div>
             </div>
@@ -129,7 +149,11 @@ export default function LearnPage() {
           {/* Sections */}
           <div className="space-y-6 mb-8">
             {mod.sections.map((section, si) => (
-              <div key={si} className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div
+                key={si}
+                className="bg-white rounded-2xl border border-slate-200 p-6 anim-fade-up"
+                style={{ animationDelay: `${0.1 + si * 0.1}s` }}
+              >
                 <h2 className="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">
                   <span
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white"
@@ -155,7 +179,7 @@ export default function LearnPage() {
 
           {/* Tips */}
           {mod.tips.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8">
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8 anim-fade-up" style={{ animationDelay: "0.4s" }}>
               <h3 className="font-bold text-amber-800 flex items-center gap-2 mb-3">
                 <Lightbulb size={16} />
                 Tips & Trik
@@ -187,10 +211,10 @@ export default function LearnPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/quiz/${moduleId}`}
-                className="flex items-center gap-2 font-semibold text-white px-5 py-2.5 rounded-xl transition-colors shadow"
+                className="flex items-center gap-2 font-semibold text-white px-5 py-2.5 rounded-xl transition-all shadow hover:scale-105 hover:shadow-md"
                 style={{ backgroundColor: mod.color }}
               >
-                Mulai Kuis
+                Mulai Kuis 🎯
                 <ArrowRight size={15} />
               </Link>
               {nextId && (

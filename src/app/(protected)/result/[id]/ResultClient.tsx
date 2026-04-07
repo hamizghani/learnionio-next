@@ -47,25 +47,82 @@ export default function ResultClient({
   let ringColor: string;
   let msg: string;
   let Icon: React.ElementType;
+  let confettiEmojis: string[];
 
   if (pct >= 80) {
     ringColor = "#16A34A";
     msg = "Luar biasa! Nilai sangat bagus.";
     Icon = Trophy;
+    confettiEmojis = ["🎉", "⭐", "🌟", "🏆", "🎈", "👏", "✨"];
   } else if (pct >= 60) {
     ringColor = "#D97706";
     msg = "Cukup baik! Masih bisa ditingkatkan.";
     Icon = ThumbsUp;
+    confettiEmojis = [];
   } else {
     ringColor = "#DC2626";
     msg = "Ayo coba lagi! Baca ulang materi dulu.";
     Icon = RefreshCw;
+    confettiEmojis = [];
   }
+
+  const floatingConf = confettiEmojis.length > 0
+    ? Array.from({ length: 12 }, (_, i) => ({
+        emoji: confettiEmojis[i % confettiEmojis.length],
+        left: `${Math.round((i / 12) * 100)}%`,
+        delay: `${(i * 0.18).toFixed(2)}s`,
+        duration: `${1.8 + (i % 3) * 0.4}s`,
+      }))
+    : [];
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-10">
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.85); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes ringDraw {
+          from { stroke-dashoffset: ${circumference}; }
+          to   { stroke-dashoffset: ${offset}; }
+        }
+        @keyframes confettiFall {
+          0%   { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(120px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes iconBounce {
+          0%, 100% { transform: scale(1) rotate(0deg); }
+          30%       { transform: scale(1.3) rotate(-10deg); }
+          60%       { transform: scale(0.9) rotate(6deg); }
+        }
+        .anim-fade-up  { animation: fadeInUp 0.45s ease both; }
+        .anim-scale-in { animation: scaleIn 0.5s cubic-bezier(.34,1.56,.64,1) both; }
+        .anim-ring     { animation: ringDraw 1.2s cubic-bezier(.4,0,.2,1) both; animation-delay: 0.3s; }
+        .anim-icon     { animation: iconBounce 0.7s ease both; animation-delay: 1.5s; }
+        .confetti-item {
+          position: absolute;
+          top: 0;
+          font-size: 1.3rem;
+          animation: confettiFall linear infinite;
+          pointer-events: none;
+        }
+      `}</style>
       {/* Score card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center mb-8 shadow-sm">
+      <div className="relative overflow-hidden bg-white rounded-2xl border border-slate-200 p-8 text-center mb-8 shadow-sm anim-scale-in">
+        {/* Confetti for high scores */}
+        {floatingConf.map((c, i) => (
+          <span
+            key={i}
+            className="confetti-item"
+            style={{ left: c.left, animationDelay: c.delay, animationDuration: c.duration }}
+          >
+            {c.emoji}
+          </span>
+        ))}
         <h1 className="text-xl font-extrabold text-slate-800 mb-1">
           Hasil Kuis: {moduleTitle}
         </h1>
@@ -86,7 +143,7 @@ export default function ResultClient({
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
-                className="progress-ring-circle"
+                className="anim-ring"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -99,7 +156,7 @@ export default function ResultClient({
         </div>
 
         <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6 anim-icon"
           style={{ backgroundColor: ringColor + "18", color: ringColor }}
         >
           <Icon size={16} />
@@ -137,13 +194,16 @@ export default function ResultClient({
       {/* Answer review */}
       {details && details.length > 0 && (
         <div className="space-y-4">
-          <h2 className="font-bold text-slate-800 text-lg">Pembahasan Jawaban</h2>
+          <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+            Pembahasan Jawaban <span className="text-base">📝</span>
+          </h2>
           {details.map((d, i) => (
             <div
               key={i}
-              className={`bg-white rounded-2xl border-2 p-5 ${
+              className={`bg-white rounded-2xl border-2 p-5 anim-fade-up ${
                 d.isCorrect ? "border-green-200" : "border-red-200"
               }`}
+              style={{ animationDelay: `${0.1 + i * 0.06}s` }}
             >
               <div className="flex items-start gap-2 mb-3">
                 {d.isCorrect ? (
