@@ -38,7 +38,6 @@ export default function LearnPage() {
   if (!moduleId || !MODULES[moduleId]) return null;
 
   const mod = MODULES[moduleId];
-  const thisProg = progMap[moduleId] ?? { materialRead: false, quizCompleted: false };
   const prevId = moduleId > 1 ? moduleId - 1 : null;
   const nextId = moduleId < TOTAL_MODULES ? moduleId + 1 : null;
 
@@ -151,7 +150,7 @@ export default function LearnPage() {
             {mod.sections.map((section, si) => (
               <div
                 key={si}
-                className="bg-white rounded-2xl border border-slate-200 p-6 anim-fade-up"
+                className="bg-white/75 backdrop-blur-sm rounded-2xl border border-white/80 shadow-sm p-6 anim-fade-up"
                 style={{ animationDelay: `${0.1 + si * 0.1}s` }}
               >
                 <h2 className="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2">

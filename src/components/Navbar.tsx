@@ -9,14 +9,14 @@ interface NavbarProps {
 
 export default function Navbar({ activePage }: NavbarProps) {
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-white/60 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-extrabold text-xl text-slate-800">
-          <span className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center">
+          <span className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-lg flex items-center justify-center shadow-sm">
             <GraduationCap size={18} />
           </span>
-          Learn<span className="text-blue-600">IO</span>
+          Learn<span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">IO</span>
         </Link>
 
         {/* Right side */}
